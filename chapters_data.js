@@ -10,8 +10,9 @@ const chapters = [
 <h4>Substitutionsmetoden</h4>
 <p>Man löser ut en variabel ur en ekvation och sätter in uttrycket i den andra ekvationen.</p>
 <div class="formula-box">
-\\[\\text{Om } y = 7 - x \\text{ sätts in i } 2x - y = 5:\\]
-\\[2x - (7 - x) = 5 \\implies 3x = 12 \\implies x = 4\\]
+\\[\\begin{cases} x + y = 7 \\\\ 2x - y = 5 \\end{cases}\\]
+\\[\\text{Från första ekvationen: } y = 7 - x\\]
+\\[\\text{Sätt in i den andra: } 2x - (7 - x) = 5 \\implies 3x = 12 \\implies x = 4\\]
 </div>
 
 <h4>Additionsmetoden</h4>
@@ -180,6 +181,9 @@ c) Beräkna burkens totala begränsningsyta.`,
 <p>Symmetrilinjen (vertexlinjen) ges av:</p>
 <div class="formula-box">\\[x = -\\frac{b}{2a}\\]</div>
 <p>Symmetrilinjen går genom parabelns vertex (topp- eller bottenpunkt).</p>
+<p><strong>Koppling till pq-formeln:</strong> Om du löser \\(x^2 + px + q = 0\\) med pq-formeln får du:</p>
+<div class="formula-box">\\[x = \\underbrace{-\\frac{p}{2}}_{\\text{symmetrilinjen}} \\pm \\underbrace{\\sqrt{\\left(\\frac{p}{2}\\right)^2 - q}}_{\\text{avståndet från symmetrilinjen}}\\]</div>
+<p>Delen före \\(\\pm\\) är alltså symmetrilinjen, och roten anger hur långt från symmetrilinjen nollställena ligger.</p>
 
 <h4>Nollställen</h4>
 <p>Nollställena (där \\(f(x) = 0\\)) fås genom att lösa andragradsekvationen \\(ax^2 + bx + c = 0\\).</p>
@@ -485,9 +489,7 @@ Ställ upp en ekvation och bestäm trädgårdens mått.`,
 <li>Använda kvadreringsreglerna "baklänges": \\(x^2 + 6x + 9 = (x + 3)^2\\)</li>
 <li>Använda konjugatregeln "baklänges": \\(x^2 - 25 = (x + 5)(x - 5)\\)</li>
 </ul>
-
-<h4>Logaritmkoppling</h4>
-<p>Om \\(2^x = y\\) så är \\(x = \\log_2 y\\). Med 10-logaritmen: \\(x = \\dfrac{\\lg y}{\\lg 2}\\).</p>`,
+`,
   problems: [
     {
       level: "E",
@@ -724,10 +726,21 @@ c) \\(\\lg 0{,}5\\)`,
 <div class="formula-box">\\[a = 1 - \\frac{p}{100}\\]</div>
 <p><strong>Exempel:</strong> En ökning med 5% ger \\(a = 1{,}05\\). En minskning med 3% ger \\(a = 0{,}97\\).</p>
 
-<h3>Halveringstid och fördubblingstid</h3>
-<p><strong>Halveringstid</strong> är den tid det tar för ett värde att halveras. Om halveringstiden är \\(t_h\\) gäller:</p>
-<div class="formula-box">\\[f(t) = C \\cdot \\left(\\frac{1}{2}\\right)^{t/t_h}\\]</div>
-<p><strong>Fördubblingstid</strong> är den tid det tar för ett värde att fördubblas. Sambandet \\(a^{t_d} = 2\\) ger fördubblingstiden \\(t_d\\).</p>
+<h3>Ställa upp exponentiella modeller från text</h3>
+<p>En exponentiell modell har formen:</p>
+<div class="formula-box">\\[f(t) = C \\cdot a^t\\]</div>
+<p>där \\(C\\) är <strong>startvärdet</strong> (värdet vid \\(t = 0\\)) och \\(a\\) är <strong>förändringsfaktorn</strong>.</p>
+<ul>
+<li>Ökning med 5 % per år → \\(a = 1{,}05\\)</li>
+<li>Minskning med 12 % per år → \\(a = 0{,}88\\)</li>
+<li>Värdet tredubblas varje timme → \\(a = 3\\)</li>
+</ul>
+<p><strong>Exempel:</strong> "En population på 400 bakterier växer med 15 % per timme."</p>
+<div class="formula-box">\\[C = 400, \\quad a = 1{,}15 \\quad \\Rightarrow \\quad f(t) = 400 \\cdot 1{,}15^t\\]</div>
+<p><strong>Två kända värden?</strong> Om du vet startvärdet och ett värde senare, kan du bestämma \\(a\\).</p>
+<p><strong>Exempel:</strong> "Vid start finns 400 bakterier. Efter 3 timmar finns 1200."</p>
+<div class="formula-box">\\[400 \\cdot a^3 = 1200 \\quad \\Rightarrow \\quad a^3 = \\frac{1200}{400} = 3 \\quad \\Rightarrow \\quad a = 3^{1/3} \\approx 1{,}44\\]</div>
+<p>Modellen blir: \\(f(t) = 400 \\cdot 1{,}44^t\\)</p>
 
 <h3>Logaritmer och exponentialekvationer</h3>
 <p>För att lösa ekvationer av typen \\(a^x = b\\) använder vi logaritmer:</p>
@@ -869,8 +882,12 @@ c) \\(\\lg 0{,}5\\)`,
   title: "Optimering",
   points: "Snitt 2,0 p/prov",
   tags: ["Utan hjälpmedel", "Med hjälpmedel"],
-  theory: `<h3>Optimering med andragradsfunktioner</h3>
-<p>Optimering handlar om att hitta det <strong>största</strong> eller <strong>minsta</strong> värdet av en storhet. I Ma2b löser vi optimeringsproblem med andragradsfunktioner.</p>
+  theory: `<h3>Vad är optimering?</h3>
+<p>Tänk dig att du har <strong>40 meter staket</strong> och en vägg. Du vill bygga en inhägnad mot väggen med så stor area som möjligt:</p>
+<div style="text-align:center;margin:16px 0">
+<img src="img/staket.png" alt="Rektangulärt staket mot en vägg" style="max-width:340px;width:100%;border-radius:8px;">
+</div>
+<p>Det streckade staketet har en fast längd — men hur ska du fördela det mellan sidorna för att få <strong>störst yta</strong>? Det är optimering: att hitta det bästa värdet givet ett villkor.</p>
 
 <h3>Metod</h3>
 <p>Följ dessa steg:</p>
@@ -887,10 +904,17 @@ c) \\(\\lg 0{,}5\\)`,
 <p>Om \\(a < 0\\) har funktionen ett <strong>maximum</strong> vid symmetrilinjen.</p>
 <p>Om \\(a > 0\\) har funktionen ett <strong>minimum</strong> vid symmetrilinjen.</p>
 
-<h3>Typiskt optimeringsproblem</h3>
-<p>En rektangel med omkretsen \\(O\\) ska ha maximal area. Om ena sidan har längden \\(x\\) är den andra sidan \\(\\frac{O}{2} - x\\), och arean blir:</p>
-<div class="formula-box">\\[A(x) = x \\cdot \\left(\\frac{O}{2} - x\\right) = -x^2 + \\frac{O}{2}x\\]</div>
-<p>Maximum fås vid \\(x = \\frac{O}{4}\\), dvs. när rektangeln är en <strong>kvadrat</strong>.</p>`,
+<h3>Exempel: Staketet mot väggen</h3>
+<p>Tillbaka till exemplet ovan: 40 meter staket, tre sidor (två kortsidor \\(x\\) och en långsida). Arean blir:</p>
+<div class="formula-box">\\[A(x) = x \\cdot (40 - 2x) = -2x^2 + 40x\\]</div>
+<p>Det här är en andragradsfunktion med \\(a = -2\\) (negativt → maximum finns!). Vi hittar symmetrilinjen:</p>
+<div class="formula-box">\\[x = -\\frac{b}{2a} = -\\frac{40}{2 \\cdot (-2)} = \\frac{40}{4} = 10\\]</div>
+<p>Kortsidorna ska alltså vara 10 m, och långsidan blir \\(40 - 2 \\cdot 10 = 20\\) m. Maximal area: \\(10 \\cdot 20 = 200 \\text{ m}^2\\).</p>
+
+<p><strong>Koppling till pq-formeln:</strong> Om vi sätter \\(A(x) = 0\\):</p>
+<div class="formula-box">\\[-2x^2 + 40x = 0 \\quad \\Rightarrow \\quad x^2 - 20x = 0 \\quad \\Rightarrow \\quad x(x - 20) = 0\\]
+\\[\\text{Nollställen: } x = 0 \\text{ och } x = 20\\]</div>
+<p>Symmetrilinjen ligger mitt mellan nollställena: \\(\\dfrac{0 + 20}{2} = 10\\). Samma svar!</p>`,
   problems: [
     {
       level: "C",
@@ -980,10 +1004,9 @@ c) \\(\\lg 0{,}5\\)`,
   tags: ["Utan hjälpmedel", "Med hjälpmedel"],
   theory: `<h3>Normalfördelningen</h3>
 <p>Många mätbara storheter (längd, vikt, provresultat) följer en <strong>normalfördelning</strong>. Kurvan är symmetrisk och klockformad.</p>
-
-<h3>Medelvärde och standardavvikelse</h3>
-<p><strong>Medelvärdet</strong> \\(\\mu\\) anger kurvans mittpunkt. <strong>Standardavvikelsen</strong> \\(\\sigma\\) anger hur spridd fördelningen är.</p>
-<div class="formula-box">\\[\\mu = \\frac{x_1 + x_2 + \\cdots + x_n}{n}\\]</div>
+<div style="text-align:center;margin:16px 0">
+<img src="img/normalfordelning.png" alt="Normalfördelningskurvan med procentandelar" style="max-width:420px;width:100%;border-radius:8px;">
+</div>
 
 <h3>68–95–99,7-regeln</h3>
 <p>I en normalfördelning gäller:</p>
@@ -992,15 +1015,34 @@ c) \\(\\lg 0{,}5\\)`,
 <li>Cirka <strong>95 %</strong> av värdena ligger inom \\(\\mu \\pm 2\\sigma\\)</li>
 <li>Cirka <strong>99,7 %</strong> av värdena ligger inom \\(\\mu \\pm 3\\sigma\\)</li>
 </ul>
-<div class="formula-box">\\[P(\\mu - \\sigma \\leq X \\leq \\mu + \\sigma) \\approx 0{,}68\\]</div>
 
-<h3>Beräkningar med GeoGebra</h3>
-<p>I GeoGebra kan du använda:</p>
-<ul>
-<li><code>Normal(μ, σ, x)</code> — ger sannolikheten \\(P(X \\leq x)\\)</li>
-<li><code>InverseNormal(μ, σ, p)</code> — ger \\(x\\)-värdet för en given sannolikhet</li>
-</ul>
-<p>Tänk på att normalfördelningen är <strong>symmetrisk</strong> kring \\(\\mu\\), så \\(P(X > \\mu + a) = P(X < \\mu - a)\\).</p>`,
+<h3>Medelvärde och standardavvikelse</h3>
+<p><strong>Medelvärdet</strong> \\(\\mu\\) anger kurvans mittpunkt. <strong>Standardavvikelsen</strong> \\(\\sigma\\) anger hur spridd fördelningen är.</p>
+<div class="formula-box">\\[\\mu = \\frac{x_1 + x_2 + \\cdots + x_n}{n}\\]</div>
+
+<h3>Beräkna i GeoGebra</h3>
+<p><strong>Normalfördelning:</strong></p>
+<ol>
+<li>Öppna <strong>Sannolikhetskalkylator</strong> (fördelningsverktyget).</li>
+<li>I rullmenyn högst upp väljer du fördelning — <strong>Normalfördelning</strong> är oftast redan förvald.</li>
+<li>Ange <strong>medelvärde (μ)</strong> och <strong>standardavvikelse (σ)</strong> i fälten bredvid.</li>
+<li>Välj vilken typ av sannolikhet du vill beräkna med knapparna under grafen:
+<br>• <strong>Vänsterknappen P(X ≤ a)</strong> — andelen <em>under</em> ett visst värde.
+<br>• <strong>Mittknappen P(a ≤ X ≤ b)</strong> — andelen <em>mellan</em> två värden.
+<br>• <strong>Högerknappen P(X ≥ a)</strong> — andelen <em>över</em> ett visst värde.</li>
+<li>Avläs sannolikheten — den visas direkt, och det skuggade området under kurvan visar intervallet grafiskt.</li>
+</ol>
+
+<p><strong>Standardavvikelse:</strong></p>
+<ol>
+<li>Öppna <strong>Kalkylblad-vyn</strong>.</li>
+<li>Mata in alla värden i kolumn A (ett värde per cell).</li>
+<li>Markera alla celler med data. Klicka på knappen med de <strong>blå staplarna</strong> och välj <strong>Envariabelanalys</strong>.</li>
+<li>Klicka på <strong>stora Σ-symbolen</strong> för att visa statistiken. Här hittar du:
+<br>• <strong>s</strong> — standardavvikelsen för ett <em>stickprov</em> (data från en del av gruppen).
+<br>• <strong>σ</strong> — standardavvikelsen för en <em>hel population</em> (data från alla).
+<br>På provet brukar det stå vilket som gäller — om det står "stickprov" använder du <strong>s</strong>.</li>
+</ol>`,
   problems: [
     {
       level: "E",
@@ -1113,16 +1155,18 @@ c) \\(\\lg 0{,}5\\)`,
 <p><strong>Tumregel:</strong> \\(|r| > 0{,}8\\) indikerar starkt samband, \\(|r| < 0{,}4\\) indikerar svagt samband.</p>
 
 <h3>Regressionslinje</h3>
-<p>Regressionslinjen (minstakvadratlinjen) \\(y = kx + m\\) är den linje som bäst anpassar sig till data. I GeoGebra:</p>
-<ul>
-<li><code>FitLine(lista)</code> — ger regressionslinjen</li>
-<li><code>CorrelationCoefficient(lista1, lista2)</code> — ger \\(r\\)</li>
-</ul>
+<p>Regressionslinjen \\(y = kx + m\\) är den linje som bäst anpassar sig till data.</p>
 
-<h3>Standardavvikelse</h3>
-<p>Standardavvikelsen beskriver spridningen i en datamängd:</p>
-<div class="formula-box">\\[s = \\sqrt{\\frac{\\sum (x_i - \\bar{x})^2}{n - 1}}\\]</div>
-<p>I GeoGebra: <code>SampleSD(lista)</code> eller <code>stdev(lista)</code>.</p>
+<h3>Bestäm regressionslinjen i GeoGebra</h3>
+<ol>
+<li>Öppna GeoGebra Classic (<strong>Kalkylblad-vyn</strong>).</li>
+<li>Mata in x-värden i kolumn A och y-värden i kolumn B.</li>
+<li>Markera alla celler med data.</li>
+<li>Klicka på knappen med de <strong>blå staplarna</strong> (uppe till vänster). Välj <strong>Tvåvariabels regressionsanalys</strong>.</li>
+<li>I rullmenyn nere till höger (där det står "Ingen") — klicka och välj <strong>Linjär</strong>.</li>
+<li>Linjens funktion visas nu under grafen, t.ex. <code>y = -0,1781x + 4,673</code>.</li>
+<li>Klicka på <strong>stora Σ-symbolen</strong> (uppe till höger ovanför grafen) för att visa statistiken — där hittar du korrelationskoefficienten <strong>r</strong>.</li>
+</ol>
 
 <h3>Viktigt att tänka på</h3>
 <p>Korrelation innebär <strong>inte</strong> kausalitet! Att två variabler samvarierar betyder inte att den ena orsakar den andra. Extrapolering (använda modellen långt utanför dataintervallet) ger ofta orimliga resultat.</p>`,
@@ -1131,11 +1175,13 @@ c) \\(\\lg 0{,}5\\)`,
       level: "E",
       num: 1,
       text: `Nedan visas fem spridningsdiagram. Avgör för varje diagram om korrelationen är positiv, negativ eller saknas.
-<br><br>Diagram A: Punkterna lutar tydligt uppåt från vänster till höger.
-<br>Diagram B: Punkterna ligger helt slumpmässigt utspridda.
-<br>Diagram C: Punkterna lutar tydligt nedåt från vänster till höger.
-<br>Diagram D: Punkterna bildar en tydlig uppåtgående linje.
-<br>Diagram E: Punkterna bildar en U-form.`,
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin:16px 0">
+<div style="text-align:center"><strong>A</strong><br><svg width="120" height="100" viewBox="0 0 120 100" style="background:#f8f9fa;border:1px solid #ddd;border-radius:4px"><line x1="15" y1="90" x2="115" y2="90" stroke="#999" stroke-width="1"/><line x1="15" y1="90" x2="15" y2="5" stroke="#999" stroke-width="1"/><circle cx="20" cy="78" r="3" fill="#3b82f6"/><circle cx="30" cy="70" r="3" fill="#3b82f6"/><circle cx="35" cy="65" r="3" fill="#3b82f6"/><circle cx="45" cy="58" r="3" fill="#3b82f6"/><circle cx="55" cy="55" r="3" fill="#3b82f6"/><circle cx="60" cy="45" r="3" fill="#3b82f6"/><circle cx="70" cy="40" r="3" fill="#3b82f6"/><circle cx="80" cy="35" r="3" fill="#3b82f6"/><circle cx="90" cy="25" r="3" fill="#3b82f6"/><circle cx="105" cy="18" r="3" fill="#3b82f6"/></svg></div>
+<div style="text-align:center"><strong>B</strong><br><svg width="120" height="100" viewBox="0 0 120 100" style="background:#f8f9fa;border:1px solid #ddd;border-radius:4px"><line x1="15" y1="90" x2="115" y2="90" stroke="#999" stroke-width="1"/><line x1="15" y1="90" x2="15" y2="5" stroke="#999" stroke-width="1"/><circle cx="25" cy="30" r="3" fill="#3b82f6"/><circle cx="35" cy="70" r="3" fill="#3b82f6"/><circle cx="45" cy="20" r="3" fill="#3b82f6"/><circle cx="50" cy="55" r="3" fill="#3b82f6"/><circle cx="60" cy="80" r="3" fill="#3b82f6"/><circle cx="70" cy="15" r="3" fill="#3b82f6"/><circle cx="75" cy="50" r="3" fill="#3b82f6"/><circle cx="85" cy="75" r="3" fill="#3b82f6"/><circle cx="95" cy="35" r="3" fill="#3b82f6"/><circle cx="105" cy="60" r="3" fill="#3b82f6"/></svg></div>
+<div style="text-align:center"><strong>C</strong><br><svg width="120" height="100" viewBox="0 0 120 100" style="background:#f8f9fa;border:1px solid #ddd;border-radius:4px"><line x1="15" y1="90" x2="115" y2="90" stroke="#999" stroke-width="1"/><line x1="15" y1="90" x2="15" y2="5" stroke="#999" stroke-width="1"/><circle cx="20" cy="15" r="3" fill="#3b82f6"/><circle cx="30" cy="25" r="3" fill="#3b82f6"/><circle cx="40" cy="30" r="3" fill="#3b82f6"/><circle cx="50" cy="40" r="3" fill="#3b82f6"/><circle cx="55" cy="50" r="3" fill="#3b82f6"/><circle cx="65" cy="55" r="3" fill="#3b82f6"/><circle cx="75" cy="60" r="3" fill="#3b82f6"/><circle cx="85" cy="70" r="3" fill="#3b82f6"/><circle cx="95" cy="78" r="3" fill="#3b82f6"/><circle cx="105" cy="82" r="3" fill="#3b82f6"/></svg></div>
+<div style="text-align:center"><strong>D</strong><br><svg width="120" height="100" viewBox="0 0 120 100" style="background:#f8f9fa;border:1px solid #ddd;border-radius:4px"><line x1="15" y1="90" x2="115" y2="90" stroke="#999" stroke-width="1"/><line x1="15" y1="90" x2="15" y2="5" stroke="#999" stroke-width="1"/><circle cx="20" cy="82" r="3" fill="#3b82f6"/><circle cx="30" cy="73" r="3" fill="#3b82f6"/><circle cx="40" cy="65" r="3" fill="#3b82f6"/><circle cx="50" cy="56" r="3" fill="#3b82f6"/><circle cx="60" cy="48" r="3" fill="#3b82f6"/><circle cx="70" cy="40" r="3" fill="#3b82f6"/><circle cx="80" cy="31" r="3" fill="#3b82f6"/><circle cx="90" cy="23" r="3" fill="#3b82f6"/><circle cx="100" cy="15" r="3" fill="#3b82f6"/><circle cx="110" cy="8" r="3" fill="#3b82f6"/></svg></div>
+<div style="text-align:center"><strong>E</strong><br><svg width="120" height="100" viewBox="0 0 120 100" style="background:#f8f9fa;border:1px solid #ddd;border-radius:4px"><line x1="15" y1="90" x2="115" y2="90" stroke="#999" stroke-width="1"/><line x1="15" y1="90" x2="15" y2="5" stroke="#999" stroke-width="1"/><circle cx="20" cy="20" r="3" fill="#3b82f6"/><circle cx="30" cy="45" r="3" fill="#3b82f6"/><circle cx="40" cy="65" r="3" fill="#3b82f6"/><circle cx="50" cy="78" r="3" fill="#3b82f6"/><circle cx="60" cy="82" r="3" fill="#3b82f6"/><circle cx="70" cy="80" r="3" fill="#3b82f6"/><circle cx="80" cy="68" r="3" fill="#3b82f6"/><circle cx="90" cy="48" r="3" fill="#3b82f6"/><circle cx="100" cy="28" r="3" fill="#3b82f6"/><circle cx="110" cy="15" r="3" fill="#3b82f6"/></svg></div>
+</div>`,
       solution: `<div class="solution-step"><strong>Diagram A:</strong> Punkterna lutar uppåt — <strong>positiv korrelation</strong>.</div>
 <div class="solution-step"><strong>Diagram B:</strong> Punkterna är slumpmässigt spridda — <strong>ingen korrelation</strong> (\\(r \\approx 0\\)).</div>
 <div class="solution-step"><strong>Diagram C:</strong> Punkterna lutar nedåt — <strong>negativ korrelation</strong>.</div>
@@ -1256,19 +1302,25 @@ c) \\(\\lg 0{,}5\\)`,
   theory: `<h3>Vinklar i cirkeln</h3>
 <p>I en cirkel med medelpunkt \\(O\\) finns flera viktiga samband mellan vinklar och bågar.</p>
 
-<h3>Medelpunktsvinkel och periferivinkel</h3>
-<p><strong>Medelpunktsvinkeln</strong> har sitt hörn i cirkelns medelpunkt. <strong>Periferivinkeln</strong> (randvinkeln) har sitt hörn på cirkelbågen.</p>
-<div class="formula-box">\\[\\text{Periferivinkel} = \\frac{\\text{Medelpunktsvinkel}}{2}\\]</div>
+<h3>Randvinkelsatsen</h3>
+<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px">
+<p><strong>Medelpunktsvinkeln</strong> (\\(u\\)) har sitt hörn i cirkelns medelpunkt. <strong>Periferivinkeln/randvinkeln</strong> (\\(v\\)) har sitt hörn på cirkelbågen.</p>
+<div class="formula-box">\\[u = 2v\\]</div>
 <p>Alla periferivinklar som spänner över <strong>samma båge</strong> är lika stora.</p>
+</div>
+<div><img src="img/randvinkelsatsen.png" alt="Randvinkelsatsen: u = 2v" style="max-width:160px;width:100%;border-radius:8px;"></div>
+</div>
 
-<h3>Thales sats</h3>
-<p>Om \\(AB\\) är en <strong>diameter</strong> och \\(C\\) är en punkt på cirkeln (inte på diametern), då är:</p>
-<div class="formula-box">\\[\\angle ACB = 90°\\]</div>
-<p>En triangel inskriven i en halvcirkel har alltid en rät vinkel mot diametern.</p>
 
 <h3>Kordasatsen</h3>
-<p>Om två kordor skär varandra i en punkt \\(P\\) inuti cirkeln, och den ena kordan delas i delarna \\(a\\) och \\(b\\) och den andra i delarna \\(c\\) och \\(d\\), då gäller:</p>
+<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+<div style="flex:1;min-width:200px">
+<p>Om två kordor skär varandra inuti cirkeln, och den ena kordan delas i delarna \\(a\\) och \\(b\\) och den andra i delarna \\(c\\) och \\(d\\), då gäller:</p>
 <div class="formula-box">\\[a \\cdot b = c \\cdot d\\]</div>
+</div>
+<div><img src="img/kordasatsen.png" alt="Kordasatsen: ab = cd" style="max-width:180px;width:100%;border-radius:8px;"></div>
+</div>
 
 <h3>Tangent och korda</h3>
 <p>En <strong>tangent</strong> till en cirkel står vinkelrätt mot radien i tangentpunkten. Vinkeln mellan en tangent och en korda genom tangentpunkten är lika med periferivinkeln på andra sidan kordan.</p>
@@ -1393,28 +1445,29 @@ c) \\(\\lg 0{,}5\\)`,
 <p>Två trianglar är <strong>likformiga</strong> om de har samma form men inte nödvändigtvis samma storlek. Det innebär att motsvarande vinklar är lika och motsvarande sidor är proportionella.</p>
 
 <h4>Likformighetsfall</h4>
-<p><strong>AA (vinkel-vinkel):</strong> Om två vinklar i en triangel är lika med två vinklar i en annan triangel, så är trianglarna likformiga. (Den tredje vinkeln blir automatiskt lika eftersom vinkelsumman är \\(180°\\).)</p>
+<p><strong>VV (vinkel-vinkel):</strong> Om två vinklar i en triangel är lika med två vinklar i en annan triangel, så är trianglarna likformiga. (Den tredje vinkeln blir automatiskt lika eftersom vinkelsumman är \\(180°\\).)</p>
 <p><strong>SSS (sid-sid-sid):</strong> Om förhållandet mellan motsvarande sidor är lika, dvs. sidorna är proportionella, så är trianglarna likformiga.</p>
-<p><strong>SAS (sida-vinkel-sida):</strong> Om förhållandet mellan två par av sidor är lika och den mellanliggande vinkeln är lika, så är trianglarna likformiga.</p>
+<p><strong>SVS (sida-vinkel-sida):</strong> Om förhållandet mellan två par av sidor är lika och den mellanliggande vinkeln är lika, så är trianglarna likformiga.</p>
 
-<h4>Kongruensfall</h4>
-<p>Två trianglar är <strong>kongruenta</strong> om de har exakt samma form och storlek. Kongruensfall:</p>
-<ul>
-<li><strong>SSS:</strong> Tre sidor lika</li>
-<li><strong>SAS:</strong> Två sidor och mellanliggande vinkel lika</li>
-<li><strong>ASA:</strong> Två vinklar och mellanliggande sida lika</li>
-<li><strong>RHS:</strong> Rätvinklig triangel med hypotenusa och en katet lika</li>
-</ul>
+<h4>Kongruens</h4>
+<p>Två trianglar är <strong>kongruenta</strong> om de har exakt samma form och storlek — de är helt enkelt exakt likadana.</p>
 
-<h4>Vinkelsumma och yttervinkel</h4>
-<div class="formula-box">\\[\\text{Vinkelsumma i en triangel: } \\alpha + \\beta + \\gamma = 180°\\]</div>
-<p>En <strong>yttervinkel</strong> till en triangel är supplementvinkeln till en av triangelns vinklar. Yttervinkeln är lika med summan av de två icke-närliggande inre vinklarna:</p>
-<div class="formula-box">\\[\\text{Yttervinkel vid } C = \\alpha + \\beta\\]</div>
+<h4>Vinkelsumma, yttervinkel och Pythagoras sats</h4>
+<div style="text-align:center;margin:16px 0">
+<img src="img/yttervinkel_pythagoras.png" alt="Yttervinkelsatsen och Pythagoras sats" style="max-width:460px;width:100%;border-radius:8px;">
+</div>
+<div class="formula-box">\\[\\text{Vinkelsumma: } u + v + w = 180°\\]</div>
+<p><strong>Yttervinkelsatsen:</strong> Yttervinkeln \\(y\\) är lika med summan av de två icke-närliggande inre vinklarna:</p>
+<div class="formula-box">\\[y = u + v\\]</div>
+<p><strong>Pythagoras sats:</strong> I en rätvinklig triangel gäller:</p>
+<div class="formula-box">\\[a^2 + b^2 = c^2\\]</div>
 
-<h4>Skala och proportionalitet</h4>
-<p>Om två trianglar är likformiga med skalan \\(k\\) gäller:</p>
-<div class="formula-box">\\[\\frac{a_1}{a_2} = \\frac{b_1}{b_2} = \\frac{c_1}{c_2} = k\\]</div>
-<p>Där \\(a_1, b_1, c_1\\) är sidorna i den ena triangeln och \\(a_2, b_2, c_2\\) är motsvarande sidor i den andra.</p>`,
+<h4>Likformighet</h4>
+<div style="text-align:center;margin:16px 0">
+<img src="img/likformighet.png" alt="Likformiga trianglar ABC och DEF" style="max-width:420px;width:100%;border-radius:8px;">
+</div>
+<p>Om två trianglar är likformiga gäller att motsvarande sidor är proportionella:</p>
+<div class="formula-box">\\[\\frac{a}{d} = \\frac{b}{e} = \\frac{c}{f}\\]</div>`,
 
   problems: [
     {
@@ -1546,9 +1599,10 @@ Om vi sätter \\(CA = 1\\) (som enhet) får vi \\(CQ = \\frac{3}{4}\\) och:
 <p>Avståndet mellan två punkter \\((x_1, y_1)\\) och \\((x_2, y_2)\\) beräknas med:</p>
 <div class="formula-box">\\[d = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}\\]</div>
 
-<h4>Vinklar vid skärning</h4>
-<p><strong>Vertikalvinklar:</strong> När två räta linjer skär varandra bildas fyra vinklar. De vinklar som ligger mitt emot varandra kallas vertikalvinklar och är lika stora.</p>
-<p><strong>Supplementvinklar:</strong> Två intilliggande vinklar vid skärningspunkten är supplementvinklar och har summan \\(180°\\).</p>
+<h4>Vinklar</h4>
+<div style="text-align:center;margin:16px 0">
+<img src="img/vinklar.png" alt="Sidovinklar, vertikalvinklar, likbelägna vinklar och alternatvinklar" style="max-width:460px;width:100%;border-radius:8px;">
+</div>
 
 <h4>Volymer</h4>
 <p><strong>Cylinder:</strong></p>
@@ -1703,17 +1757,11 @@ Alltså är \\(r = 10\\) en maximipunkt. Vi kontrollerar också att \\(h > 0\\):
 
 <h4>Ekvivalens (\\(\\Leftrightarrow\\))</h4>
 <p>En <strong>ekvivalens</strong> innebär att båda implikationerna gäller: \\(A \\Rightarrow B\\) och \\(B \\Rightarrow A\\). Vi skriver \\(A \\Leftrightarrow B\\) och säger "\\(A\\) om och endast om \\(B\\)".</p>
+<p><strong>Exempel:</strong> "En triangel har tre lika stora vinklar" \\(\\Leftrightarrow\\) "Triangeln är liksidig."<br>
+Båda riktningarna gäller: om vinklarna är lika så är triangeln liksidig, och om triangeln är liksidig så är vinklarna lika.</p>
 <div class="formula-box">\\[A \\Leftrightarrow B \\quad \\text{betyder: } A \\Rightarrow B \\text{ och } B \\Rightarrow A\\]</div>
 
-<h4>Nödvändigt och tillräckligt villkor</h4>
-<p>I implikationen \\(A \\Rightarrow B\\):</p>
-<ul>
-<li>\\(A\\) är ett <strong>tillräckligt villkor</strong> för \\(B\\) (det räcker med \\(A\\) för att \\(B\\) ska gälla)</li>
-<li>\\(B\\) är ett <strong>nödvändigt villkor</strong> för \\(A\\) (\\(B\\) måste gälla om \\(A\\) gäller)</li>
-</ul>
-
-<h4>Sanning och falskhet</h4>
-<p>En implikation \\(A \\Rightarrow B\\) är falsk <strong>bara</strong> om \\(A\\) är sant och \\(B\\) är falskt. I alla andra fall är implikationen sann.</p>`,
+`,
 
   problems: [
     {
