@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NP Matematik 2b — Plugga smart</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+/*——— RESET & BASE ———*/
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f7fb;--sidebar:#1e293b;--sidebar-hover:#334155;
+  --primary:#2563eb;--primary-light:#dbeafe;--primary-dark:#1d4ed8;
+  --accent:#0ea5e9;--white:#fff;--gray-50:#f8fafc;--gray-100:#f1f5f9;
+  --gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-400:#94a3b8;
+  --gray-500:#64748b;--gray-600:#475569;--gray-700:#334155;--gray-800:#1e293b;
+  --gray-900:#0f172a;
+  --green:#16a34a;--green-light:#dcfce7;--green-bg:#f0fdf4;
+  --yellow:#ca8a04;--yellow-light:#fef9c3;--yellow-bg:#fefce8;
+  --red:#dc2626;--red-light:#fecaca;--red-bg:#fef2f2;
+  --radius:8px;--shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+  --transition:all .2s ease;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--gray-800);line-height:1.6;display:flex;min-height:100vh}
+
+/*——— SIDEBAR ———*/
+.sidebar{
+  width:280px;min-height:100vh;background:var(--sidebar);color:var(--gray-200);
+  position:fixed;left:0;top:0;bottom:0;overflow-y:auto;z-index:100;
+  transition:transform .3s ease;display:flex;flex-direction:column;
+}
+.sidebar-header{padding:24px 20px 16px;border-bottom:1px solid var(--sidebar-hover)}
+.sidebar-header h1{font-size:1.25rem;color:var(--white);font-weight:700}
+.sidebar-header p{font-size:.8rem;color:var(--gray-400);margin-top:4px}
+.sidebar-nav{flex:1;padding:8px 0}
+.nav-section{padding:12px 20px 4px;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--gray-400);font-weight:600}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 20px;
+  cursor:pointer;transition:var(--transition);font-size:.9rem;color:var(--gray-300);
+  text-decoration:none;border-left:3px solid transparent;
+}
+.nav-item:hover{background:var(--sidebar-hover);color:var(--white)}
+.nav-item.active{background:var(--sidebar-hover);color:var(--white);border-left-color:var(--primary)}
+.nav-item .nav-icon{width:20px;text-align:center;flex-shrink:0}
+.nav-item .nav-badge{
+  margin-left:auto;font-size:.7rem;padding:2px 8px;border-radius:10px;
+  background:var(--primary);color:var(--white);font-weight:600;
+}
+.nav-item .nav-check{margin-left:auto;color:var(--green);font-size:.85rem}
+.chapter-nav .nav-item{padding-left:24px;font-size:.85rem}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--sidebar-hover);font-size:.75rem;color:var(--gray-500);text-align:center}
+
+/*——— HAMBURGER ———*/
+.hamburger{
+  display:none;position:fixed;top:12px;left:12px;z-index:200;
+  background:var(--sidebar);border:none;color:var(--white);
+  width:44px;height:44px;border-radius:var(--radius);cursor:pointer;
+  font-size:1.4rem;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-md);
+}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
+
+/*——— MAIN ———*/
+.main{margin-left:280px;flex:1;min-height:100vh;padding:32px 40px 60px}
+.main-header{margin-bottom:32px}
+.breadcrumb{font-size:.85rem;color:var(--gray-500);margin-bottom:8px}
+.breadcrumb span{cursor:pointer}
+.breadcrumb span:hover{color:var(--primary)}
+.page-title{font-size:1.8rem;font-weight:700;color:var(--gray-900)}
+.page-subtitle{font-size:1rem;color:var(--gray-500);margin-top:4px}
+
+/*——— CARDS ———*/
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:20px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:1.1rem;font-weight:700;color:var(--gray-800)}
+
+/*——— DASHBOARD ———*/
+.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;text-align:center}
+.stat-value{font-size:2rem;font-weight:700;color:var(--primary)}
+.stat-label{font-size:.85rem;color:var(--gray-500);margin-top:4px}
+.countdown{font-size:1.1rem;color:var(--gray-700);font-weight:600}
+.countdown .days{font-size:2.5rem;color:var(--primary);display:block}
+
+.progress-bar-outer{width:100%;height:12px;background:var(--gray-200);border-radius:6px;overflow:hidden;margin:8px 0}
+.progress-bar-inner{height:100%;border-radius:6px;transition:width .5s ease}
+.pb-green{background:linear-gradient(90deg,#16a34a,#22c55e)}
+.pb-yellow{background:linear-gradient(90deg,#ca8a04,#eab308)}
+.pb-red{background:linear-gradient(90deg,#dc2626,#ef4444)}
+.pb-blue{background:linear-gradient(90deg,var(--primary),var(--accent))}
+
+.chapter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:20px}
+.chapter-card{
+  background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:20px;cursor:pointer;transition:var(--transition);border:2px solid transparent;
+}
+.chapter-card:hover{border-color:var(--primary);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.chapter-card .ch-number{font-size:.75rem;color:var(--primary);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.chapter-card .ch-title{font-size:1rem;font-weight:700;margin:4px 0 8px;color:var(--gray-800)}
+.chapter-card .ch-points{font-size:.8rem;color:var(--gray-500)}
+.chapter-card .ch-progress{margin-top:12px}
+.chapter-card .ch-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+
+/*——— GRADE PROGRESS ———*/
+.grade-progress{margin-bottom:24px}
+.grade-row{display:flex;align-items:center;gap:16px;margin-bottom:16px;padding:16px 20px;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow)}
+.grade-label{font-size:1.4rem;font-weight:800;width:30px;text-align:center;flex-shrink:0}
+.grade-label.e-label{color:var(--green)}
+.grade-label.c-label{color:var(--yellow)}
+.grade-label.a-label{color:var(--red)}
+.grade-info{flex:1}
+.grade-pct{font-size:1.3rem;font-weight:700}
+.grade-hint{font-size:.8rem;color:var(--gray-500);margin-top:2px}
+.grade-bar{margin-top:6px}
+
+/*——— TAGS ———*/
+.tag{font-size:.7rem;padding:3px 8px;border-radius:4px;font-weight:600}
+.tag-utan{background:#ede9fe;color:#7c3aed}
+.tag-med{background:#fce7f3;color:#be185d}
+
+/*——— CHAPTER CONTENT ———*/
+.theory-section{background:var(--primary-light);border-radius:var(--radius);padding:24px;margin-bottom:24px;border-left:4px solid var(--primary)}
+.theory-section h3{color:var(--primary-dark);margin-bottom:12px;font-size:1.15rem}
+.theory-section p{margin-bottom:10px;color:var(--gray-700)}
+.theory-section ul{margin:8px 0 8px 20px}
+.theory-section li{margin-bottom:4px;color:var(--gray-700)}
+.formula-box{background:var(--white);border-radius:var(--radius);padding:16px;margin:12px 0;border:1px solid var(--primary);text-align:center;font-size:1.1rem}
+.video-link{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-300);color:var(--primary);font-weight:600;font-size:.85rem;margin-top:8px;text-decoration:none;cursor:pointer}
+.video-link:hover{background:var(--primary-light);border-color:var(--primary)}
+
+.level-section{margin-bottom:32px}
+.level-header{
+  display:flex;align-items:center;gap:12px;margin-bottom:16px;
+  padding-bottom:8px;border-bottom:2px solid var(--gray-200);
+}
+.level-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;border-radius:50%;font-weight:700;font-size:1rem;color:var(--white);
+}
+.level-badge.e-level{background:var(--green)}
+.level-badge.c-level{background:var(--yellow)}
+.level-badge.a-level{background:var(--red)}
+.level-title{font-size:1.1rem;font-weight:700;color:var(--gray-800)}
+.level-desc{font-size:.8rem;color:var(--gray-500)}
+
+.problem{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.problem-header{padding:16px 20px;display:flex;align-items:flex-start;gap:12px}
+.problem-number{flex-shrink:0;font-size:.8rem;font-weight:700;padding:4px 10px;border-radius:4px}
+.problem-number.e-num{background:var(--green-bg);color:var(--green)}
+.problem-number.c-num{background:var(--yellow-bg);color:var(--yellow)}
+.problem-number.a-num{background:var(--red-bg);color:var(--red)}
+.problem-text{flex:1;font-size:.95rem;line-height:1.7}
+.solution-toggle{
+  display:flex;align-items:center;gap:8px;padding:10px 20px;
+  background:var(--gray-50);cursor:pointer;font-size:.85rem;
+  color:var(--primary);font-weight:600;border-top:1px solid var(--gray-100);
+  transition:var(--transition);user-select:none;
+}
+.solution-toggle:hover{background:var(--primary-light)}
+.solution-content{
+  display:none;padding:16px 20px;background:var(--gray-50);
+  border-top:1px solid var(--gray-100);font-size:.92rem;line-height:1.8;
+}
+.solution-content.open{display:block}
+.solution-step{margin-bottom:8px;padding-left:8px;border-left:2px solid var(--primary-light)}
+.problem-footer{
+  padding:10px 20px;border-top:1px solid var(--gray-100);
+  display:flex;align-items:center;gap:8px;
+}
+.problem-footer label{font-size:.85rem;color:var(--gray-600);cursor:pointer;display:flex;align-items:center;gap:8px}
+.problem-footer input[type=checkbox]{width:18px;height:18px;accent-color:var(--primary);cursor:pointer}
+
+/*——— GEOGEBRA ———*/
+.geo-category{margin-bottom:24px}
+.geo-category h3{font-size:1.05rem;color:var(--gray-800);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--gray-200)}
+.geo-guide{background:var(--gray-50);border-radius:var(--radius);padding:16px 20px;margin-bottom:12px;border-left:3px solid var(--accent)}
+.geo-guide h4{font-size:.95rem;color:var(--gray-800);margin-bottom:6px}
+.geo-guide code{background:var(--white);padding:2px 8px;border-radius:4px;font-size:.85rem;color:var(--primary-dark);border:1px solid var(--gray-200)}
+.geo-guide p{font-size:.85rem;color:var(--gray-600);margin-bottom:4px}
+.geo-item{
+  background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:var(--transition);
+}
+.geo-item:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.geo-item .geo-ch{font-size:.75rem;color:var(--primary);font-weight:700}
+.geo-item .geo-text{font-size:.9rem;color:var(--gray-700);flex:1}
+
+/*——— STATS TABLE ———*/
+.stats-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.stats-table th{background:var(--primary);color:var(--white);padding:10px 12px;text-align:left;font-weight:600}
+.stats-table td{padding:10px 12px;border-bottom:1px solid var(--gray-200)}
+.stats-table tr:nth-child(even){background:var(--gray-50)}
+.stats-table tr:hover{background:var(--primary-light)}
+.bar-chart{margin-top:24px}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.bar-label{width:200px;font-size:.8rem;color:var(--gray-700);text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:24px;background:var(--gray-100);border-radius:4px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:.75rem;color:var(--white);font-weight:600;transition:width .5s ease}
+
+/*——— EXAM INFO ———*/
+.exam-structure{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin:20px 0}
+.exam-part{border-radius:var(--radius);padding:20px;border:2px solid var(--gray-200)}
+.exam-part h4{margin-bottom:8px;font-size:1rem}
+.exam-part ul{margin:8px 0 0 16px;font-size:.9rem;color:var(--gray-600)}
+.exam-part li{margin-bottom:4px}
+.tip-box{background:var(--green-bg);border-left:4px solid var(--green);border-radius:var(--radius);padding:16px 20px;margin-bottom:12px}
+.tip-box strong{color:var(--green)}
+.tip-box p{font-size:.9rem;color:var(--gray-700);margin-top:4px}
+
+/*——— PROGRESS PAGE ———*/
+.progress-overview{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.progress-chapter{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.progress-chapter h4{font-size:.95rem;font-weight:700;margin-bottom:8px;color:var(--gray-800)}
+.progress-detail{display:flex;gap:8px;margin-top:8px;font-size:.8rem}
+.progress-detail span{padding:3px 8px;border-radius:4px}
+.filter-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.filter-bar button{
+  padding:8px 16px;border-radius:var(--radius);border:none;
+  font-size:.85rem;background:var(--red);color:var(--white);cursor:pointer;font-weight:600;
+}
+.filter-bar button:hover{background:#b91c1c}
+
+/*——— RESPONSIVE ———*/
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .hamburger{display:flex}
+  .overlay.active{display:block}
+  .main{margin-left:0;padding:24px 16px 60px}
+  .main-header{margin-top:48px}
+  .dashboard-grid{grid-template-columns:1fr 1fr}
+  .chapter-grid{grid-template-columns:1fr}
+  .bar-label{width:120px;font-size:.7rem}
+  .page-title{font-size:1.4rem}
+  .exam-structure{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .dashboard-grid{grid-template-columns:1fr}
+  .progress-overview{grid-template-columns:1fr}
+}
+.katex{font-size:1em !important}
+.theory-section .katex{font-size:1.05em !important}
+.formula-box .katex{font-size:1.15em !important}
+.sidebar::-webkit-scrollbar{width:6px}
+.sidebar::-webkit-scrollbar-track{background:transparent}
+.sidebar::-webkit-scrollbar-thumb{background:var(--gray-600);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- HAMBURGER -->
+<button class="hamburger" id="hamburger" onclick="toggleSidebar()">&#9776;</button>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>NP Matematik 2b</h1>
+    <p>Nationellt prov — Plugga smart</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Navigering</div>
+    <a class="nav-item active" onclick="showPage('dashboard')" data-page="dashboard">
+      <span class="nav-icon">&#128200;</span> Översikt
+    </a>
+    <a class="nav-item" onclick="showPage('examinfo')" data-page="examinfo">
+      <span class="nav-icon">&#128214;</span> Så funkar provet
+    </a>
+    <a class="nav-item" onclick="showPage('geogebra')" data-page="geogebra">
+      <span class="nav-icon">&#128208;</span> GeoGebra-guide
+    </a>
+    <a class="nav-item" onclick="showPage('stats')" data-page="stats">
+      <span class="nav-icon">&#128202;</span> Provstatistik
+    </a>
+    <a class="nav-item" onclick="showPage('progress')" data-page="progress">
+      <span class="nav-icon">&#127942;</span> Min färdväg
+    </a>
+    <div class="nav-section">Kapitel</div>
+    <div class="chapter-nav" id="chapterNav"></div>
+  </nav>
+  <div class="sidebar-footer">smatte.nu &copy; 2026</div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main" id="mainContent"></main>
+
+<script src="chapters_data.js"></script>
+<script>
+// ============================
+// GEOGEBRA GUIDE DATA
+// ============================
+const geogebraGuides = [
+  {category:"Linjär regression", guide:{
+    title:"Hur gör man linjär regression i GeoGebra?",
+    steps:["Öppna GeoGebra Classic (Kalkylblad-vyn)","Mata in x-värden i kolumn A och y-värden i kolumn B","Markera alla celler med data","Klicka på knappen med de blå staplarna (uppe till vänster). Välj <strong>Tvåvariabels regressionsanalys</strong> i menyn som dyker upp.","I rullmenyn nere till höger (där det står \"Ingen\") — klicka och välj <strong>Linjär</strong>.","Linjens funktion visas nu under grafen, t.ex. <code>y = -0,1781x + 4,673</code>.","Klicka på <strong>stora Σ-symbolen</strong> (uppe till höger ovanför grafen) för att visa statistiken — där hittar du korrelationskoefficienten <strong>r</strong>."],
+    exercise:{task:"Mata in följande data och bestäm regressionslinjen: <br><table style='margin:8px 0;border-collapse:collapse;font-size:.85rem'><tr><td style='padding:4px 12px;border:1px solid #ccc'><strong>x</strong></td><td style='padding:4px 12px;border:1px solid #ccc'>1</td><td style='padding:4px 12px;border:1px solid #ccc'>2</td><td style='padding:4px 12px;border:1px solid #ccc'>3</td><td style='padding:4px 12px;border:1px solid #ccc'>4</td><td style='padding:4px 12px;border:1px solid #ccc'>5</td></tr><tr><td style='padding:4px 12px;border:1px solid #ccc'><strong>y</strong></td><td style='padding:4px 12px;border:1px solid #ccc'>2</td><td style='padding:4px 12px;border:1px solid #ccc'>5</td><td style='padding:4px 12px;border:1px solid #ccc'>7</td><td style='padding:4px 12px;border:1px solid #ccc'>8</td><td style='padding:4px 12px;border:1px solid #ccc'>11</td></tr></table>Vad blir ekvationen och korrelationskoefficienten?", answer:"Regressionslinje: <strong>y = 2,1x + 0,1</strong><br>Korrelationskoefficient: <strong>r ≈ 0,994</strong> (mycket starkt positivt samband)"}
+  }, items:[
+    {ch:9, text:"Bestäm regressionslinje från datatabell (Kap 9)"},
+    {ch:9, text:"Gör prognos med regressionsmodell (Kap 9)"}
+  ]},
+  {category:"Normalfördelning & standardavvikelse", guide:{
+    title:"Hur arbetar man med normalfördelning och standardavvikelse i GeoGebra?",
+    steps:["<strong>Normalfördelning:</strong> Öppna <strong>Sannolikhetskalkylator</strong> (fördelningsverktyget).","I rullmenyn högst upp väljer du fördelning — <strong>Normalfördelning</strong> är oftast redan förvald.","Ange <strong>medelvärde (μ)</strong> och <strong>standardavvikelse (σ)</strong> i fälten bredvid.","Välj vilken typ av sannolikhet du vill beräkna med knapparna under grafen: <br>• <strong>Vänsterknappen P(X ≤ a)</strong> — beräknar andelen <em>under</em> ett visst värde (vänster svans). <br>• <strong>Mittknappen P(a ≤ X ≤ b)</strong> — beräknar andelen <em>mellan</em> två värden (intervall). <br>• <strong>Högerknappen P(X ≥ a)</strong> — beräknar andelen <em>över</em> ett visst värde (höger svans). <br>Fyll sedan i gränsvärdet/gränsvärdena i fälten som dyker upp.","Avläs sannolikheten (procent/andel) — den visas direkt, och det skuggade området under kurvan visar intervallet grafiskt.","<strong>Standardavvikelse:</strong> Öppna <strong>Kalkylblad-vyn</strong>.","Mata in alla värden i kolumn A (ett värde per cell).","Markera alla celler med data. Klicka på knappen med de <strong>blå staplarna</strong> (uppe till vänster) och välj <strong>Envariabelanalys</strong>.","Klicka på <strong>stora Σ-symbolen</strong> för att visa statistiken. Här hittar du två standardavvikelser: <br>• <strong>s</strong> (lilla s) — standardavvikelsen för ett <em>stickprov</em>. Används när du har data från en del av en grupp. <br>• <strong>σ</strong> (lilla sigma) — standardavvikelsen för en <em>hel population</em>. Används när du har data från alla i gruppen. <br>På provet brukar det stå vilket som gäller — om det står \"stickprov\" använder du <strong>s</strong>."],
+    exercise:{task:"<strong>a)</strong> Längden hos vuxna kvinnor är normalfördelad med μ = 166 cm och σ = 6 cm. Hur stor andel är kortare än 160 cm?<br><strong>b)</strong> Beräkna standardavvikelsen för: 14, 18, 15, 21, 17, 19, 16", answer:"<strong>a)</strong> Sannolikhetskalkylator: μ = 166, σ = 6, P(X ≤ 160) ≈ <strong>0,159</strong> → ca 16 % är kortare än 160 cm.<br><strong>b)</strong> Kalkylblad → Markera → Blå staplar → Envariabels statistikanalys → σ ≈ <strong>2,38</strong>"}
+  }, items:[
+    {ch:8, text:"Beräkna andel inom intervall (Kap 8)"},
+    {ch:8, text:"Galtonbräda och normalfördelningssymmetri (Kap 8)"},
+    {ch:8, text:"Beräkna standardavvikelse från stickprov (Kap 8)"}
+  ]},
+  {category:"Lösa ekvationer", guide:{
+    title:"Hur löser man ekvationer i GeoGebra?",
+    steps:["Öppna <strong>CAS-vyn</strong>.","Skriv in din ekvation direkt, t.ex. <code>1.7^x = 5</code>.","Klicka på en av knapparna till höger om inmatningsfältet: <br>• <strong>x =</strong> ger ett <em>exakt</em> svar (t.ex. med logaritmer eller bråk). <br>• <strong>x ≈</strong> ger ett <em>numeriskt</em> (avrundat) svar med decimaler.","<strong>Tips:</strong> Använd <strong>x ≈</strong> i de flesta fall på provet! Exponentialekvationer och många andra uppgifter kräver svar med decimaler, och det exakta svaret kan bli ett krångligt uttryck som du ändå måste avrunda.","Avläs lösningen som visas under din inmatning."],
+    exercise:{task:"Lös ekvationen <code>3 · 1,08^x = 12</code> med GeoGebra. Svara med två decimaler.", answer:"Skriv <code>3 * 1.08^x = 12</code> i CAS → klicka x ≈ → <strong>x ≈ 18,01</strong>"}
+  }, items:[
+    {ch:6, text:"Lös exponentialekvationer numeriskt (Kap 6)"},
+    {ch:1, text:"Lös ekvationssystem med CAS (Kap 1)"}
+  ]},
+  {category:"Analysera en funktion", guide:{
+    title:"Hur analyserar man en funktion i GeoGebra?",
+    steps:["Öppna <strong>GeoGebra i standardläge</strong> (Grafik + Algebra-vy). Använd den inbyggda inmatningen (klicka i inmatningsfältet nere) — den hjälper dig skriva rätt tecken så att du slipper skrivfel.","Skriv in funktionen, t.ex. <code>f(x) = 2x^2 - 3x + 1</code>, och tryck <strong>Enter</strong>. Grafen ritas upp i koordinatsystemet.","Klicka på <strong>de tre punkterna (⋮)</strong> till höger om funktionen i algebrafältet och välj <strong>Speciella punkter</strong>. GeoGebra hittar automatiskt: <br>• <strong>Rot(f)</strong> — nollställena, dvs. där grafen skär x-axeln. <br>• <strong>Extrempunkt(f)</strong> — grafens topp- eller bottenpunkt (max/min). <br>• <strong>Skärning(f, yAxeln)</strong> — där grafen skär y-axeln. Detta är ofta funktionens <em>startvärde</em>, eftersom x = 0 i den punkten."],
+    exercise:{task:"Skriv in <code>f(x) = -x^2 + 4x + 5</code> och använd Speciella punkter. Vad är nollställena, extrempunkten och y-skärningen?", answer:"Nollställen: <strong>x = -1</strong> och <strong>x = 5</strong><br>Extrempunkt (max): <strong>(2, 9)</strong><br>Skärning med y-axeln: <strong>(0, 5)</strong> — detta är startvärdet"}
+  }, items:[
+    {ch:2, text:"Hitta nollställen och extrempunkt (Kap 2)"},
+    {ch:7, text:"Optimering — hitta max/min grafiskt (Kap 7)"}
+  ]},
+  {category:"Skärning mellan två grafer", guide:{
+    title:"Hur hittar man skärningspunkter mellan två grafer?",
+    steps:["Öppna <strong>GeoGebra i standardläge</strong> (Grafik + Algebra-vy).","Skriv in första funktionen, t.ex. <code>f(x) = x^2 - 3</code>, och tryck <strong>Enter</strong>.","Skriv in andra funktionen i nästa inmatningsfält, t.ex. <code>g(x) = x + 1</code>, och tryck <strong>Enter</strong>. Båda graferna syns nu.","Klicka på <strong>verktygsikonen</strong> uppe till vänster (symbolen med en prick och ett A, bredvid pilen). Välj <strong>Skärning mellan två objekt</strong> i menyn som öppnas.","Klicka på den ena grafen och sedan på den andra grafen i koordinatsystemet. Skärningspunkterna markeras och koordinaterna visas i algebrafältet."],
+    exercise:{task:"Rita <code>f(x) = x^2 - 2</code> och <code>g(x) = 2x + 1</code>. Hitta skärningspunkterna.", answer:"Skärningspunkterna är <strong>(-1, -1)</strong> och <strong>(3, 7)</strong>"}
+  }, items:[
+    {ch:6, text:"Skärningspunkter mellan funktioner (Kap 6)"},
+    {ch:6, text:"Kombinerad exponentiell + linjär modell (Kap 6)"}
+  ]},
+  {category:"Ekvationssystem grafiskt", guide:{
+    title:"Hur löser man ekvationssystem grafiskt i GeoGebra?",
+    steps:["Öppna <strong>GeoGebra i standardläge</strong> (Grafik + Algebra-vy).","Skriv om varje ekvation i systemet så att y är ensamt i vänsterledet. T.ex. om systemet är <code>2x + y = 8</code> och <code>x - y = 1</code>, skriv om till <code>y = 8 - 2x</code> och <code>y = x - 1</code>.","Skriv in första funktionen, t.ex. <code>f(x) = 8 - 2x</code>, och tryck <strong>Enter</strong>.","Skriv in andra funktionen, t.ex. <code>g(x) = x - 1</code>, och tryck <strong>Enter</strong>.","Klicka på <strong>verktygsikonen</strong> uppe till vänster (prick + A). Välj <strong>Skärning mellan två objekt</strong>.","Klicka på de båda linjerna i koordinatsystemet. Skärningspunkten visas — det är lösningen till ekvationssystemet! <br>• x-koordinaten = värdet på x <br>• y-koordinaten = värdet på y"],
+    exercise:{task:"Lös ekvationssystemet grafiskt: <br><code>x + 2y = 10</code><br><code>3x - y = 4</code><br>Tips: skriv om till y = ...", answer:"Omskrivning: <code>y = 5 - 0.5x</code> och <code>y = 3x - 4</code><br>Skärningspunkt: <strong>(2,57 ; 3,71)</strong> → alltså x ≈ 2,6 och y ≈ 3,7<br>(Exakt: x = 18/7, y = 26/7)"}
+  }, items:[
+    {ch:1, text:"Lös ekvationssystem grafiskt (Kap 1)"}
+  ]}
+];
+
+// ============================
+// STATE & LOCALSTORAGE
+// ============================
+const LS_PREFIX = "np_ma2b_";
+function lsKey(ch, q) { return LS_PREFIX+"ch"+ch+"_q"+q+"_done"; }
+function isDone(ch, q) { return localStorage.getItem(lsKey(ch,q))==="true"; }
+function setDone(ch, q, v) { localStorage.setItem(lsKey(ch,q), v?"true":"false"); }
+
+function getChapterProgress(ch) {
+  const c = chapters.find(x=>x.id===ch);
+  if(!c) return {done:0,total:0,eTotal:0,eDone:0,cTotal:0,cDone:0,aTotal:0,aDone:0};
+  let done=0, eT=0, eD=0, cT=0, cD=0, aT=0, aD=0;
+  c.problems.forEach((p,i)=>{
+    const d = isDone(ch,i+1);
+    if(d) done++;
+    if(p.level==="E"){eT++; if(d) eD++;}
+    if(p.level==="C"){cT++; if(d) cD++;}
+    if(p.level==="A"){aT++; if(d) aD++;}
+  });
+  return {done, total:c.problems.length, eTotal:eT, eDone:eD, cTotal:cT, cDone:cD, aTotal:aT, aDone:aD};
+}
+
+function getGradeProgress() {
+  let eTotal=0, eDone=0, cTotal=0, cDone=0, aTotal=0, aDone=0;
+  chapters.forEach(c=>{
+    const p = getChapterProgress(c.id);
+    eTotal+=p.eTotal; eDone+=p.eDone;
+    cTotal+=p.cTotal; cDone+=p.cDone;
+    aTotal+=p.aTotal; aDone+=p.aDone;
+  });
+  // Provbaserade mal med sakerhetsmarginal:
+  // Provet ~57p. E~14p, C~29p, A~44p. Vi har 96 uppgifter.
+  // Varje uppgift ~ 0.6 provpoäng. Med marginal (~1.4x) för att inte lura eleven:
+  const eTarget = 20;  // E-grans ~14p -> ~24 uppg, med marginal ~20 E-uppg
+  const cTarget = 42;  // C-grans ~29p -> ~42 E+C uppg
+  const aTarget = 64;  // A-grans ~44p -> ~64 totalt
+  const ePct = Math.min(100, Math.round(100*eDone/eTarget));
+  const cPct = Math.min(100, Math.round(100*(eDone+cDone)/cTarget));
+  const aPct = Math.min(100, Math.round(100*(eDone+cDone+aDone)/aTarget));
+  return {ePct, cPct, aPct, eDone, eTotal, cDone, cTotal, aDone, aTotal, eTarget, cTarget, aTarget};
+}
+
+function getTotalProgress() {
+  let done=0, total=0;
+  chapters.forEach(c=>{ c.problems.forEach((_,i)=>{ total++; if(isDone(c.id,i+1)) done++; }); });
+  return {done, total};
+}
+
+function getMissingChapters(level) {
+  const missing = [];
+  chapters.forEach(c=>{
+    const probs = c.problems.filter(p=>p.level===level);
+    if(probs.length===0) return;
+    const done = probs.filter((_,i)=>isDone(c.id, probs[i].num)).length;
+    if(done < probs.length) missing.push({id:c.id, title:c.title, done, total:probs.length});
+  });
+  return missing;
+}
+
+function getLastChapter(){ return parseInt(localStorage.getItem(LS_PREFIX+"lastCh"))||0; }
+function setLastChapter(id){ localStorage.setItem(LS_PREFIX+"lastCh", id); }
+
+// ============================
+// NAVIGATION
+// ============================
+let currentPage = "dashboard";
+let currentChapter = null;
+
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("overlay").classList.toggle("active");
+}
+function closeSidebar(){
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("overlay").classList.remove("active");
+}
+
+function showPage(page, chId){
+  currentPage = page;
+  closeSidebar();
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  const sel = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if(sel) sel.classList.add("active");
+  if(page==="chapter" && chId){
+    currentChapter = chId;
+    setLastChapter(chId);
+    document.querySelectorAll(".nav-item[data-page^='chapter_']").forEach(n=>{
+      n.classList.toggle("active", n.dataset.page==="chapter_"+chId);
+    });
+  }
+  render();
+  window.scrollTo(0,0);
+}
+
+function render(){
+  const main = document.getElementById("mainContent");
+  switch(currentPage){
+    case "dashboard": main.innerHTML = renderDashboard(); break;
+    case "chapter": main.innerHTML = renderChapter(currentChapter); break;
+    case "examinfo": main.innerHTML = renderExamInfo(); break;
+    case "geogebra": main.innerHTML = renderGeogebra(); break;
+    case "stats": main.innerHTML = renderStats(); break;
+    case "progress": main.innerHTML = renderProgress(); break;
+  }
+  if(window.renderMathInElement){
+    renderMathInElement(main, {
+      delimiters:[{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false}],
+      throwOnError:false
+    });
+  }
+}
+
+// ============================
+// SIDEBAR CHAPTER NAV
+// ============================
+function buildChapterNav(){
+  const nav = document.getElementById("chapterNav");
+  let html="";
+  chapters.forEach(c=>{
+    const prog = getChapterProgress(c.id);
+    const pct = prog.total?Math.round(100*prog.done/prog.total):0;
+    html+=`<a class="nav-item" data-page="chapter_${c.id}" onclick="showPage('chapter',${c.id})">
+      <span class="nav-icon">${c.id}.</span>
+      <span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.title}</span>
+      ${pct===100?'<span class="nav-check">&#10003;</span>':`<span class="nav-badge">${pct}%</span>`}
+    </a>`;
+  });
+  nav.innerHTML=html;
+}
+
+// ============================
+// RENDER GRADE PROGRESS BARS
+// ============================
+function renderGradeProgressBars(){
+  const g = getGradeProgress();
+  const missingE = getMissingChapters("E").slice(0,2);
+  const missingC = getMissingChapters("C").slice(0,2);
+  const missingA = getMissingChapters("A").slice(0,2);
+
+  function hint(missing, label) {
+    if(missing.length===0) return "Bra jobbat!";
+    return "Fokusera på: " + missing.map(m=>"Kap "+m.id+" "+m.title).join(", ");
+  }
+
+  const eLeft = Math.max(0, g.eTarget - g.eDone);
+  const cLeft = Math.max(0, g.cTarget - (g.eDone+g.cDone));
+  const aLeft = Math.max(0, g.aTarget - (g.eDone+g.cDone+g.aDone));
+
+  return `<div class="grade-progress">
+    <div class="grade-row">
+      <div class="grade-label e-label">E</div>
+      <div class="grade-info">
+        <div class="grade-pct">${g.ePct}% mot E</div>
+        <div class="grade-hint">${g.eDone} av ~${g.eTarget} E-uppgifter (mål med marginal). ${eLeft>0?eLeft+" kvar. ":"Klart! "}${hint(missingE,"E")}</div>
+        <div class="grade-bar"><div class="progress-bar-outer" style="height:14px"><div class="progress-bar-inner pb-green" style="width:${g.ePct}%"></div></div></div>
+      </div>
+    </div>
+    <div class="grade-row">
+      <div class="grade-label c-label">C</div>
+      <div class="grade-info">
+        <div class="grade-pct">${g.cPct}% mot C</div>
+        <div class="grade-hint">${g.eDone+g.cDone} av ~${g.cTarget} E+C-uppgifter (mål med marginal). ${cLeft>0?cLeft+" kvar. ":"Klart! "}${hint(missingC,"C")}</div>
+        <div class="grade-bar"><div class="progress-bar-outer" style="height:14px"><div class="progress-bar-inner pb-yellow" style="width:${g.cPct}%"></div></div></div>
+      </div>
+    </div>
+    <div class="grade-row">
+      <div class="grade-label a-label">A</div>
+      <div class="grade-info">
+        <div class="grade-pct">${g.aPct}% mot A</div>
+        <div class="grade-hint">${g.eDone+g.cDone+g.aDone} av ~${g.aTarget} uppgifter (mål med marginal). ${aLeft>0?aLeft+" kvar. ":"Klart! "}${hint(missingA,"A")}</div>
+        <div class="grade-bar"><div class="progress-bar-outer" style="height:14px"><div class="progress-bar-inner pb-red" style="width:${g.aPct}%"></div></div></div>
+      </div>
+    </div>
+    <p style="margin-top:12px;font-size:.8rem;color:var(--gray-500);font-style:italic">
+      Detta är en ungefärlig uppskattning. Sikta högre än målet för att känna dig trygg med att du når det betyg du vill ha på provet.
+    </p>
+  </div>`;
+}
+
+// ============================
+// RENDER DASHBOARD
+// ============================
+function renderDashboard(){
+  const tp = getTotalProgress();
+  const pct = tp.total?Math.round(100*tp.done/tp.total):0;
+  const examDate = new Date(2026,4,20);
+  const now = new Date();
+  const diffDays = Math.max(0, Math.ceil((examDate-now)/(1000*60*60*24)));
+
+  let chapCards = "";
+  chapters.forEach(c=>{
+    const prog = getChapterProgress(c.id);
+    const cpct = prog.total?Math.round(100*prog.done/prog.total):0;
+    let tags = c.tags.map(t=>`<span class="tag ${t.includes('Utan')?'tag-utan':'tag-med'}">${t}</span>`).join("");
+    chapCards+=`<div class="chapter-card" onclick="showPage('chapter',${c.id})">
+      <div class="ch-number">Kapitel ${c.id}</div>
+      <div class="ch-title">${c.title}</div>
+      <div class="ch-points">${c.points}</div>
+      <div class="ch-tags">${tags}</div>
+      <div class="ch-progress">
+        <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--gray-500)">
+          <span>${prog.done}/${prog.total} uppgifter</span><span>${cpct}%</span>
+        </div>
+        <div class="progress-bar-outer" style="height:6px"><div class="progress-bar-inner pb-blue" style="width:${cpct}%"></div></div>
+      </div>
+    </div>`;
+  });
+
+  return `<div class="main-header">
+    <div class="page-title">Nationellt prov Matematik 2b</div>
+    <div class="page-subtitle">Din studieportal för att klara provet</div>
+  </div>
+  <div class="card" style="background:linear-gradient(135deg,#1e40af,#3b82f6);color:white;margin-bottom:24px">
+    <h2 style="margin-bottom:8px">Välkommen!</h2>
+    <p style="opacity:.9;line-height:1.7">Här kan du förbereda dig inför det nationella provet i Matematik 2b. Alla uppgifter är baserade på vad som brukar komma på proven. Börja med E-uppgifterna, jobba dig upp till C och sedan A. Bocka av uppgifterna allteftersom — så ser du hur långt du har kommit!</p>
+  </div>
+  <div class="dashboard-grid">
+    <div class="stat-card">
+      <div class="countdown">
+        <span class="days">${diffDays}</span>
+        dagar till provet<br><small style="color:var(--gray-400)">20 maj 2026</small>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${tp.done}/${tp.total}</div>
+      <div class="stat-label">Uppgifter klara</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:16px">Din provberedskap</div>
+    ${renderGradeProgressBars()}
+  </div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px">Kapitel — sorterade efter provvikt</div>
+    <div class="chapter-grid">${chapCards}</div>
+  </div>`;
+}
+
+// ============================
+// RENDER EXAM INFO
+// ============================
+function renderExamInfo(){
+  return `<div class="main-header">
+    <div class="breadcrumb"><span onclick="showPage('dashboard')">Översikt</span> / Så funkar provet</div>
+    <div class="page-title">Så funkar provet</div>
+    <div class="page-subtitle">Allt du behöver veta om det nationella provet i Matematik 2b</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Provstruktur</div>
+    <p style="margin-top:8px;color:var(--gray-600);line-height:1.7">Provet brukar bestå av två provpass på vardera 120 minuter.</p>
+    <div class="exam-structure">
+      <div class="exam-part" style="border-color:#7c3aed">
+        <h4 style="color:#7c3aed">Pass 1: Utan hjälpmedel (120 min)</h4>
+        <ul>
+          <li><strong>Delprov B:</strong> Enbart svar krävs (~10 uppgifter)</li>
+          <li><strong>Delprov C:</strong> Fullständiga lösningar krävs (~8 uppgifter)</li>
+          <li>Hjälpmedel: Formelblad och linjal</li>
+          <li>Inga digitala verktyg!</li>
+        </ul>
+      </div>
+      <div class="exam-part" style="border-color:#be185d">
+        <h4 style="color:#be185d">Pass 2: Med hjälpmedel (120 min)</h4>
+        <ul>
+          <li><strong>Delprov D:</strong> Blandning av "enbart svar" och "fullständiga lösningar"</li>
+          <li>Hjälpmedel: GeoGebra, räknare, formelblad, linjal</li>
+          <li>Flera uppgifter <em>kräver</em> digitala verktyg</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Ungefärliga betygsgränser</div>
+    <p style="margin:8px 0 16px;color:var(--gray-600)">Provet brukar ha runt <strong>57 poäng</strong> totalt. Gränserna varierar något från är till ar, men brukar ligga ungefar så har:</p>
+    <table class="stats-table" style="max-width:400px">
+      <thead><tr><th>Betyg</th><th>Ungefärlig gräns</th></tr></thead>
+      <tbody>
+        <tr><td><strong>E</strong></td><td>ca 15 poäng</td></tr>
+        <tr><td><strong>D</strong></td><td>ca 23 poäng</td></tr>
+        <tr><td><strong>C</strong></td><td>ca 30 poäng</td></tr>
+        <tr><td><strong>B</strong></td><td>ca 38 poäng</td></tr>
+        <tr><td><strong>A</strong></td><td>ca 45 poäng</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px;font-size:.85rem;color:var(--gray-500)">Referens: NP 2022 (offentligt) hade 58 poäng med gränserna E=14, D=22, C=29, B=38, A=45.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Poängfördelning</div>
+    <p style="margin:8px 0;color:var(--gray-600)">Provet brukar ha ungefär:</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin:12px 0">
+      <div style="padding:12px 20px;background:var(--green-bg);border-radius:var(--radius);text-align:center">
+        <div style="font-size:1.5rem;font-weight:700;color:var(--green)">~21</div>
+        <div style="font-size:.8rem;color:var(--green)">E-poäng</div>
+      </div>
+      <div style="padding:12px 20px;background:var(--yellow-bg);border-radius:var(--radius);text-align:center">
+        <div style="font-size:1.5rem;font-weight:700;color:var(--yellow)">~19</div>
+        <div style="font-size:.8rem;color:var(--yellow)">C-poäng</div>
+      </div>
+      <div style="padding:12px 20px;background:var(--red-bg);border-radius:var(--radius);text-align:center">
+        <div style="font-size:1.5rem;font-weight:700;color:var(--red)">~17</div>
+        <div style="font-size:.8rem;color:var(--red)">A-poäng</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px">Strategitips för provdagen</div>
+    <div class="tip-box">
+      <strong>Tips 1: Visa alltid ditt arbete i Delprov C och D</strong>
+      <p>Poäng ges för metod, inte bara svar. Skriv tydliga uträkningar — även om svaret blir fel kan du få poäng för korrekt metod.</p>
+    </div>
+    <div class="tip-box">
+      <strong>Tips 2: Skriv vad du gör i GeoGebra</strong>
+      <p>I Delprov D räcker det inte att bara skriva svaret. Förklara vilka kommandon du använde och vad de visade.</p>
+    </div>
+    <div class="tip-box">
+      <strong>Tips 3: Disponera tiden</strong>
+      <p>Du har 120 min per pass. Fastna inte på en svår uppgift — gå vidare och kom tillbaka om du har tid över.</p>
+    </div>
+    <div class="tip-box">
+      <strong>Tips 4: Kontrollera dina svar</strong>
+      <p>Om du har tid, sätt tillbaka lösningarna i ekvationerna för att kontrollera att de stämmer.</p>
+    </div>
+  </div>`;
+}
+
+// ============================
+// RENDER CHAPTER
+// ============================
+function renderChapter(id){
+  const ch = chapters.find(c=>c.id===id);
+  if(!ch) return "<p>Kapitlet hittades inte.</p>";
+  const prog = getChapterProgress(ch.id);
+  const pct = prog.total?Math.round(100*prog.done/prog.total):0;
+  let tags = ch.tags.map(t=>`<span class="tag ${t.includes('Utan')?'tag-utan':'tag-med'}">${t}</span>`).join(" ");
+
+  const eProbs = ch.problems.filter(p=>p.level==="E");
+  const cProbs = ch.problems.filter(p=>p.level==="C");
+  const aProbs = ch.problems.filter(p=>p.level==="A");
+
+  function renderProblems(probs, numClass){
+    return probs.map(p=>{
+      const checked = isDone(ch.id, p.num) ? "checked":"";
+      return `<div class="problem">
+        <div class="problem-header">
+          <span class="problem-number ${numClass}">${p.level}${p.num}</span>
+          <div class="problem-text">${p.text}</div>
+        </div>
+        <div class="solution-toggle" onclick="toggleSolution(this)">&#9654; Visa lösning</div>
+        <div class="solution-content">${p.solution}</div>
+        <div class="problem-footer">
+          <label><input type="checkbox" ${checked} onchange="markDone(${ch.id},${p.num},this.checked)"> Jag har förstått denna uppgift</label>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  // Build level sections only if problems exist at that level
+  let levelSections = "";
+  if(eProbs.length > 0){
+    levelSections += `<div class="level-section">
+      <div class="level-header">
+        <span class="level-badge e-level">E</span>
+        <div><div class="level-title">E-nivå</div><div class="level-desc">Grundläggande — direkt tillämpning</div></div>
+      </div>
+      ${renderProblems(eProbs,"e-num")}
+    </div>`;
+  }
+  if(cProbs.length > 0){
+    levelSections += `<div class="level-section">
+      <div class="level-header">
+        <span class="level-badge c-level">C</span>
+        <div><div class="level-title">C-nivå</div><div class="level-desc">Mellannivå — flerstegslösning</div></div>
+      </div>
+      ${renderProblems(cProbs,"c-num")}
+    </div>`;
+  }
+  if(aProbs.length > 0){
+    levelSections += `<div class="level-section">
+      <div class="level-header">
+        <span class="level-badge a-level">A</span>
+        <div><div class="level-title">A-nivå</div><div class="level-desc">Avancerat — tillämpning & bevis</div></div>
+      </div>
+      ${renderProblems(aProbs,"a-num")}
+    </div>`;
+  }
+
+  // Chapter-level E/C/A progress
+  let chProgressBars = "";
+  if(eProbs.length>0) chProgressBars+=`<span style="background:var(--green-bg);color:var(--green);padding:3px 10px;border-radius:4px;font-size:.8rem">E: ${prog.eDone}/${prog.eTotal}</span>`;
+  if(cProbs.length>0) chProgressBars+=`<span style="background:var(--yellow-bg);color:var(--yellow);padding:3px 10px;border-radius:4px;font-size:.8rem">C: ${prog.cDone}/${prog.cTotal}</span>`;
+  if(aProbs.length>0) chProgressBars+=`<span style="background:var(--red-bg);color:var(--red);padding:3px 10px;border-radius:4px;font-size:.8rem">A: ${prog.aDone}/${prog.aTotal}</span>`;
+
+  return `<div class="main-header">
+    <div class="breadcrumb"><span onclick="showPage('dashboard')">Översikt</span> / Kapitel ${ch.id}</div>
+    <div class="page-title">Kapitel ${ch.id}: ${ch.title}</div>
+    <div class="page-subtitle">${ch.points} ${tags}</div>
+    <div style="margin-top:12px;max-width:500px">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--gray-500)">
+        <span>${prog.done}/${prog.total} uppgifter</span>
+        <div style="display:flex;gap:8px">${chProgressBars}</div>
+      </div>
+      <div class="progress-bar-outer"><div class="progress-bar-inner pb-blue" style="width:${pct}%"></div></div>
+    </div>
+  </div>
+  <div class="theory-section">
+    ${ch.theory}
+    <div class="video-link" onclick="alert('Här kan din lärare lägga till en videolänk!')">&#9654; Videoförklaring (kommer snart)</div>
+  </div>
+  ${levelSections}`;
+}
+
+// ============================
+// RENDER GEOGEBRA
+// ============================
+function renderGeogebra(){
+  let html = `<div class="main-header">
+    <div class="breadcrumb"><span onclick="showPage('dashboard')">Översikt</span> / GeoGebra</div>
+    <div class="page-title">GeoGebra-guide</div>
+    <div class="page-subtitle">Så använder du GeoGebra på provet — steg för steg</div>
+  </div>
+  <div class="card" style="margin-bottom:24px;background:var(--primary-light);border-left:4px solid var(--primary)">
+    <p><strong>Tips:</strong> Öva i <a href="https://www.exam.net/matematik" target="_blank" style="color:var(--primary)">exam.net/matematik</a> — det är samma GeoGebra-version som används på provet!</p>
+  </div>`;
+
+  geogebraGuides.forEach(cat=>{
+    html+=`<div class="geo-category"><h3>${cat.category}</h3>`;
+    // Guide box
+    html+=`<div class="geo-guide">
+      <h4>${cat.guide.title}</h4>
+      <ol style="margin:8px 0 8px 16px;font-size:.85rem;color:var(--gray-600)">
+        ${cat.guide.steps.map(s=>`<li style="margin-bottom:4px">${s}</li>`).join("")}
+      </ol>
+    </div>`;
+    if(cat.guide.exercise){
+      html+=`<div style="background:var(--yellow-bg);border-radius:var(--radius);padding:16px 20px;margin-bottom:12px;border-left:3px solid var(--yellow)">
+        <div style="font-size:.85rem;font-weight:700;color:var(--yellow);margin-bottom:8px">Övningsuppgift — testa själv!</div>
+        <div style="font-size:.9rem;color:var(--gray-700);line-height:1.7">${cat.guide.exercise.task}</div>
+        <div class="solution-toggle" onclick="toggleSolution(this)" style="margin-top:10px;background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-200);padding:8px 14px;display:inline-block;font-size:.85rem;cursor:pointer;color:var(--primary);font-weight:600">&#9654; Visa facit</div>
+        <div class="solution-content" style="margin-top:10px;background:var(--white);border-radius:var(--radius);padding:14px 18px;font-size:.9rem;line-height:1.7;border:1px solid var(--gray-200)">${cat.guide.exercise.answer}</div>
+      </div>`;
+    }
+    // Related tasks
+    cat.items.forEach(item=>{
+      html+=`<div class="geo-item" onclick="showPage('chapter',${item.ch})">
+        <span class="geo-ch">Kap ${item.ch}</span>
+        <span class="geo-text">${item.text}</span>
+        <span style="color:var(--primary)">&#10132;</span>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  return html;
+}
+
+// ============================
+// RENDER STATS
+// ============================
+function renderStats(){
+  const statsData = [
+    {name:"Ekvationssystem",e:2.8,c:2.5,a:2.0,total:7.3},
+    {name:"Andragradsfunktioner",e:2.0,c:2.0,a:2.3,total:6.3},
+    {name:"Geometri — Övrigt",e:0.8,c:0.8,a:4.3,total:5.8},
+    {name:"Exp.ekvationer & funktioner",e:1.5,c:1.8,a:1.5,total:4.8},
+    {name:"Algebra",e:1.8,c:1.8,a:1.0,total:4.5},
+    {name:"Geometri — Trianglar",e:1.5,c:1.0,a:1.5,total:4.0},
+    {name:"Andragradsekvationer",e:2.3,c:1.3,a:0,total:3.5},
+    {name:"Regression & korrelation",e:2.0,c:1.3,a:0.3,total:3.5},
+    {name:"Geometri — Cirkeln",e:1.0,c:2.5,a:0,total:3.5},
+    {name:"Normalfördelning",e:1.3,c:1.3,a:0.8,total:3.3},
+    {name:"Logaritmer",e:1.0,c:2.0,a:0,total:3.0},
+    {name:"Optimering",e:0,c:0,a:2.0,total:2.0},
+    {name:"Bevis & generalisering",e:0,c:0,a:1.5,total:1.5},
+    {name:"Logik",e:1.0,c:0,a:0,total:1.0}
+  ];
+  const maxT = 7.5;
+
+  let bars = statsData.map((s,i)=>{
+    const w = Math.round(100*s.total/maxT);
+    const color = s.total>5?"#2563eb":s.total>3?"#0ea5e9":"#94a3b8";
+    return `<div class="bar-row">
+      <div class="bar-label">${i+1}. ${s.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${color}"></div></div>
+    </div>`;
+  }).join("");
+
+  return `<div class="main-header">
+    <div class="breadcrumb"><span onclick="showPage('dashboard')">Översikt</span> / Statistik</div>
+    <div class="page-title">Provstatistik</div>
+    <div class="page-subtitle">Vilka ämnen brukar komma på provet?</div>
+  </div>
+  <div class="card" style="background:var(--yellow-bg);border-left:4px solid var(--yellow);margin-bottom:24px">
+    <p style="color:var(--gray-700);line-height:1.7">
+      <strong>Observera:</strong> Denna rangordning är baserad på observationer från tidigare prov och ger en fingervisning om vilka ämnen som brukar vara viktiga.
+      Det är ingen garanti för att kommande prov följer samma mönster — varje prov ser lite olika ut. Använd detta som vägledning, inte som en exakt prognos.
+    </p>
+  </div>
+  <div class="card">
+    <div class="card-title">Ämnenas provvikt — från vanligast till minst vanligt</div>
+    <p style="margin:8px 0 16px;color:var(--gray-600)">Amnena är rangordnade efter hur mycket de historiskt brukat förekomma på proven:</p>
+    <div class="bar-chart">${bars}</div>
+  </div>`;
+}
+
+// ============================
+// RENDER PROGRESS
+// ============================
+function renderProgress(){
+  let overview = "";
+  chapters.forEach(ch=>{
+    const prog = getChapterProgress(ch.id);
+    const pct = prog.total?Math.round(100*prog.done/prog.total):0;
+    let detailSpans = "";
+    if(prog.eTotal>0) detailSpans+=`<span style="background:var(--green-bg);color:var(--green)">E: ${prog.eDone}/${prog.eTotal}</span>`;
+    if(prog.cTotal>0) detailSpans+=`<span style="background:var(--yellow-bg);color:var(--yellow)">C: ${prog.cDone}/${prog.cTotal}</span>`;
+    if(prog.aTotal>0) detailSpans+=`<span style="background:var(--red-bg);color:var(--red)">A: ${prog.aDone}/${prog.aTotal}</span>`;
+    overview+=`<div class="progress-chapter" onclick="showPage('chapter',${ch.id})" style="cursor:pointer">
+      <h4>${ch.id}. ${ch.title}</h4>
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--gray-500)">
+        <span>${prog.done}/${prog.total}</span><span>${pct}%</span>
+      </div>
+      <div class="progress-bar-outer" style="height:8px"><div class="progress-bar-inner pb-blue" style="width:${pct}%"></div></div>
+      <div class="progress-detail">${detailSpans}</div>
+    </div>`;
+  });
+
+  return `<div class="main-header">
+    <div class="breadcrumb"><span onclick="showPage('dashboard')">Översikt</span> / Min färdväg</div>
+    <div class="page-title">Min färdväg</div>
+    <div class="page-subtitle">Så här långt har du kommit i din förberedelse</div>
+  </div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-title" style="margin-bottom:16px">Din provberedskap</div>
+    ${renderGradeProgressBars()}
+  </div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-title" style="margin-bottom:12px">Per kapitel</div>
+    <div class="progress-overview">${overview}</div>
+  </div>
+  <div class="filter-bar">
+    <button onclick="resetProgress()">Återställ all progress</button>
+  </div>`;
+}
+
+// ============================
+// ACTIONS
+// ============================
+function toggleSolution(el){
+  const content = el.nextElementSibling;
+  const isOpen = content.classList.toggle("open");
+  el.innerHTML = isOpen ? "&#9650; Dölj lösning" : "&#9654; Visa lösning";
+  if(isOpen && window.renderMathInElement){
+    renderMathInElement(content, {
+      delimiters:[{left:"\\[",right:"\\]",display:true},{left:"\\(",right:"\\)",display:false}],
+      throwOnError:false
+    });
+  }
+}
+
+function markDone(ch, q, val){
+  setDone(ch, q, val);
+  buildChapterNav();
+}
+
+function resetProgress(){
+  if(confirm("Är du säker på att du vill återställa alla resultat? Detta kan inte ångras.")){
+    chapters.forEach(ch=>{
+      ch.problems.forEach((_,i)=>{ localStorage.removeItem(lsKey(ch.id, i+1)); });
+    });
+    buildChapterNav();
+    render();
+  }
+}
+
+// ============================
+// INIT
+// ============================
+document.addEventListener("DOMContentLoaded", function(){
+  buildChapterNav();
+  const waitForKatex = setInterval(()=>{
+    if(window.renderMathInElement){ clearInterval(waitForKatex); render(); }
+  }, 100);
+  setTimeout(()=>{ clearInterval(waitForKatex); render(); }, 3000);
+});
+</script>
+</body>
+</html>
